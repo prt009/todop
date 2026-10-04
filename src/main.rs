@@ -25,7 +25,7 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
       "add" =>{
          if args.len()<5{
             println!("invalid number of fields for 'add'");
-            help_msg();
+            println!("add [id] [task] [description]");
             return Ok(());
          }
          let title =args[3].to_string();
@@ -42,6 +42,45 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
          save_todos(&todos)?;
       },
       // todos.push(Task { id: 5, title: String::from("chapter 4"), completed: false });
+      "edit" =>{
+         if args.len()<4{
+            println!("invalid number of fields for 'edit'");
+            return Ok(());
+         }
+         let id:u32=args[2].parse().unwrap();
+         match args[3].as_str(){
+            "t"=>{
+               if args.len()>5{
+                  println!("invalid number of fields for a title edit");
+                  return Ok(());
+               }
+               let title =args[4].to_string();
+               edit_title(&mut todos, id, &title);
+            }
+            "d"=>{
+               if args.len()<5{
+                  println!("invalid number of fields for desc edit");
+                  return Ok(());
+               }
+               let desc=args[4].to_string();
+               edit_desc(&mut todos, id, &desc);
+            }
+            "td"=>{
+               if args.len()<6{
+                  println!("invalid number of fields for td edit ");
+                  return Ok(());
+               }
+               let title =args[4].to_string();
+               let desc=args[5].to_string();
+               edit_title(&mut todos, id, &title);
+               edit_desc(&mut todos, id, &desc);
+            },
+            _=>{println!("invalid command.. \nedit [id] [td|t|d] [args..]");return Ok(())}
+         }
+         save_todos(&todos)?;
+         println!("edited.")
+       
+      },
       "list"=> {
          for i in todos.iter(){
             if i.completed!=true{
@@ -82,6 +121,21 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
    Ok(())
 }
 
+fn edit_title(todos:&mut [Task],id:u32,new_t: &str){
+   for i in todos{
+      if id ==i.id{
+         i.title= String::from(new_t);
+      }
+   }
+}
+fn edit_desc(todos:&mut [Task],id:u32,new_d: &str){
+   for i in todos{
+      if id ==i.id{
+         i.description= String::from(new_d);
+      }
+   }
+}
+
 fn load_todos()->Result<Vec<Task>,Box<dyn std::error::Error>>{
 
    match fs::read_to_string(FILE_NAME){
@@ -108,6 +162,11 @@ r#"commands:
 list     :to list the tasks u have.
 add      :to add a new task.
           add [id] [task] [description]
+edit     :to edit a task with id.
+          edit [id] [td|t|d] [args..]
+            td: [td] [task] [desc]  edit both title and description.
+            t : [t] [task]          edit only title.
+            d : [d] [desc]          edit only description.
 delete   :to delete a task.
           delete [id]
 done     :to mark as done.
