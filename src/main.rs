@@ -16,7 +16,6 @@ struct Task{
 fn main()->Result<(),Box<dyn std::error::Error>>{
    let args: Vec<String>= env::args().collect();
    let mut todos=load_todos()?;
-   // todos.push(Task { id: 3, title: String::from("complete chapter3"), completed: true });
    if args.len()==1{
       help_msg();
       return Ok(());
@@ -30,10 +29,17 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
          }
          let title =args[3].to_string();
          let desc=args[4].to_string();
+         let idx:u32=args[2].parse().unwrap();
+         for i in &todos{
+            if i.id==idx{
+               println!("id already exists. to edit run edit command.");
+               return Ok(());
+            }
+         }
          println!("added new task:\ntitle: {title}\ndescription: {desc}",);
          todos.push(
             Task { 
-               id: args[2].parse().unwrap(), 
+               id: idx, 
                title:title, 
                description:desc,
                completed: false 
@@ -41,7 +47,6 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
          );
          save_todos(&todos)?;
       },
-      // todos.push(Task { id: 5, title: String::from("chapter 4"), completed: false });
       "edit" =>{
          if args.len()<4{
             println!("invalid number of fields for 'edit'");
@@ -88,7 +93,7 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
             }else {
                println!("[x] {} {}",i.id,i.title);
             }
-            println!()
+            println!("        :{}",i.description);
          }
       },
       "delete"=>{
