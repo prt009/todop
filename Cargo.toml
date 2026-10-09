@@ -1,7 +1,11 @@
 [package]
-name = "todo-app"
+name = "todp"
 version = "0.1.0"
 edition = "2024"
+description = "a todo app which builds a json file per folder"
+homepage = "https://github.com/prt009/todp"
+documentation = "https://github.com/prt009/todp/wiki"
+license = "MIT"
 
 [dependencies]
 serde = { version = "1.0.229", features = ["derive"] }
