@@ -1,4 +1,4 @@
-# todop
+# todp
 just cli implementations stuff
 
 
